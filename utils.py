@@ -124,6 +124,6 @@ def clip_to_city(data, shapefile, crs_data, x_dims, y_dims):
     
     clipped = data.rio.clip(shapefile.geometry.apply(mapping),
                             shapefile.crs, all_touched=True, 
-                            invert=False,)
+                            invert=False, from_disk=True)
     
     return clipped

@@ -217,3 +217,56 @@ def retrieve_corine(province):
                                   np.nan)
     
     return clipped_dt
+
+
+def retrieve_modis(province, source_type):
+    """
+    Adjusts and retrieves modis dataset
+        of corresponding province.
+    """
+    
+    tile_dict = {
+        'istanbul': 'h20v04',
+        'ankara': 'h20v04', # change
+        'izmir': 'h20v04' # change
+    }
+    data_source = 'modis'
+    tile_extension = tile_dict[province]
+    var_name = 'LST_Day_1km'
+    
+    # define general path to datasets
+    general_path = f'data/{province}/{data_source}/{source_type}/*{tile_extension}*'
+
+    # get individual data links
+    data_links = glob(general_path)
+
+    # open each data and merge them
+    dt_list = []
+    
+    for link in data_links:
+
+        # open dataset
+        dt = rioxarray.open_rasterio(link, masked=True).squeeze()#[var_name]
+
+        # assign dates to modis data (the date information is not robust)
+        dt = define_modis_date(dt, link)
+
+        # accumulate each dataset
+        dt_list.append(dt)
+        
+    # merge data
+    merged_dt = xr.concat(dt_list, dim='time')
+    
+    # multiply data with scale factor
+    scale_factor = merged_dt.attrs['scale_factor']
+    merged_dt = merged_dt * scale_factor
+    
+    # clip data to province
+    x_dims = 'x'
+    y_dims = 'y'
+    clipped_dt = clip_subroutine(merged_dt, 
+                                 province, 
+                                 x_dims, 
+                                 y_dims).squeeze()
+    
+    return clipped_dt
