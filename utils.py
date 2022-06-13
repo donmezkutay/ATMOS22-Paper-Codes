@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from glob import glob
 
+import pandas as pd
 import pyproj
 import rioxarray
 from shapely.geometry import mapping
@@ -127,3 +128,31 @@ def clip_to_city(data, shapefile, crs_data, x_dims, y_dims):
                             invert=False, from_disk=True)
     
     return clipped
+
+def get_turkish_city_names():
+    
+    # path related to province
+    il = 'common'
+    
+    # data source
+    data_source = 'population'
+    
+    # define general path to datasets
+    general_path = f'data/{il}/{data_source}/*'
+
+    # get individual data links
+    data_links = glob(general_path)
+
+    # open dataframe
+    dt = pd.read_excel(data_links[0])
+    
+    # define turkish to english encode-decode
+    turkish_encodes, turkish_decodes = create_encode_and_decode()
+
+    # fix encodes 
+    dt['Province'] = dt['Province'].apply(lambda x: fix_utf_problems(x, 
+                                                                     turkish_encodes,
+                                                                     turkish_decodes)) \
+                                                                     .str \
+                                                                     .lower()
+    return dt['Province'].unique()

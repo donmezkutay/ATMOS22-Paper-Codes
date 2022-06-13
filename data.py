@@ -124,7 +124,10 @@ def retrieve_population(province):
                                                                      .str \
                                                                      .lower()
     # get province data
-    dt = dt.query(f'Province == "{province}"').reset_index(drop=True)
+    if not isinstance(province, list):
+        province = [province]
+
+    dt = dt.query(f'Province in {province}').reset_index(drop=True)
     dt.attrs['data-source'] = data_source
     dt.attrs['province'] = province
     
