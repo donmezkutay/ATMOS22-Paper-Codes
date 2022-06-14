@@ -156,3 +156,14 @@ def get_turkish_city_names():
                                                                      .str \
                                                                      .lower()
     return dt['Province'].unique()
+
+def find_rate_of_change(dt, init_year, end_year, province):
+    
+    init_value = dt.loc[init_year, province]
+    end_value = dt.loc[end_year, province]
+    
+    return (end_value - init_value) / init_value * 100
+
+def find_percentage(row, province, total):
+    
+    return row[province] / row[total] * 100
