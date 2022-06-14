@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from glob import glob
 
+import numpy as np
 import pandas as pd
 import pyproj
 import rioxarray
@@ -167,3 +168,24 @@ def find_rate_of_change(dt, init_year, end_year, province):
 def find_percentage(row, province, total):
     
     return row[province] / row[total] * 100
+
+def define_index_correspondence():
+    indexes = {
+        'urban' : np.arange(1, 12), # 1 to 11 included
+        'agriculture' : np.arange(12, 23), # 12 to 22 included
+        'forest' : np.arange(23, 35), # 23 to 34 included
+        'wetlands' : np.arange(35, 40), # 35 to 39 included
+        'water' : np.arange(40, 46), # 40 to 45 included
+        'all': np.arange(1, 46), # all grids
+        'all_but_water': np.arange(1, 40) # all but not water
+    }
+    
+    return indexes
+
+def find_grid_amount(data, index, year):
+    
+    data = data.sel(time=year)
+    return data.where(data.isin(index))\
+                .count()\
+                .compute() \
+                .values
