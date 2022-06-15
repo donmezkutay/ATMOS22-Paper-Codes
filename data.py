@@ -65,7 +65,7 @@ def retrieve_dmsp(province):
     for link in data_links:
         
         # open data
-        dt = rioxarray.open_rasterio(link) \
+        dt = rioxarray.open_rasterio(link, masked=True) \
                       .squeeze() \
                       .sel(y = lats, 
                            x = lons)   
