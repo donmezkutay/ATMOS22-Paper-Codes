@@ -5,7 +5,7 @@ from data import *
 from utils import *
 
 
-def population_line_plot(dt, province, method):
+def line_plot(dt, method, suptitle):
     
     # start figure
     f, axs = proplot.subplots(array=[[1, 1],
@@ -19,9 +19,8 @@ def population_line_plot(dt, province, method):
                               tight=False)
     
     # format whole figure
-    axs.format(xlabel='xlabel',
-               ylabel='ylabel',
-               suptitle='Population Change',
+    axs.format(
+               suptitle=suptitle,
                abcloc='ul',
                abc=True,)
     
@@ -42,13 +41,17 @@ def population_line_plot(dt, province, method):
         x = province_dt.columns[1:].values.astype(str)
         
         # check the method
-        if method == 'lineplot':
+        if method == 'dmsp_lineplot':
+            y = province_dt.iloc[:, 1:].transpose().values
+            ylabel = 'Percentage of Total (%)'
+        
+        elif method == 'population_lineplot':
             y = province_dt.iloc[:, 1:].transpose().values/1e6 # pretty visual
             ylabel = 'Population (Mn)'
-            
+        
         elif method == 'ratio':
             y = province_dt.iloc[:, 1:].transpose().values
-            ylabel = 'Ratio to Whole Population (%)'
+            ylabel = 'Percentage of Total (%)'
             
         #return x,y
         axs[i].plot(x, y,
@@ -67,7 +70,7 @@ def population_line_plot(dt, province, method):
                      )
         
     # savefig    
-    plt.savefig(fr'pictures/population_{method}_fig.jpeg',
+    plt.savefig(fr'pictures/{method}_fig.jpeg',
                 bbox_inches='tight', optimize=False,
                 progressive=True, dpi=300)
     
