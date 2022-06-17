@@ -1,5 +1,8 @@
+import cartopy
 import matplotlib.pyplot as plt
 import proplot
+from cartopy.feature import ShapelyFeature
+from cartopy.io.shapereader import Reader
 
 from data import *
 from utils import *
@@ -148,4 +151,81 @@ def corine_yearly_pdf_change_plot(dt, method, indexes, years, provinces):
     # savefig    
     plt.savefig(fr'pictures/corine_{method}_fig.jpeg',
                 bbox_inches='tight', optimize=False,
+                progressive=True, dpi=300)
+    
+    
+def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
+                                    proj, suptitle, cmap, vmin, vmax,
+                                    norm, ticks):
+
+    # Create Figure -------------------------
+    fig, axs = proplot.subplots(fig_array, 
+                              aspect=4, axwidth=2, proj=proj,
+                              hratios=tuple(np.ones(len(fig_array), dtype=int)),
+                              includepanels=True, hspace=-0.10, wspace=0.1)
+
+    # format whole figure
+    axs.format(
+               suptitle=suptitle,
+               abcloc='ul',
+               abc=True,)
+    
+    # format lon and lat limits
+    axs[0].format(lonlim=(27.7, 30), latlim=(40.5, 41.9), # istanbul
+                  labels=False, longrid=False, latgrid = False)
+    axs[1].format(lonlim=(26, 28.7), latlim=(37.8, 39.5), # izmir
+                  labels=False, longrid=False, latgrid = False) 
+    axs[2].format(lonlim=(30.8, 33.9), latlim=(38.5, 40.8), # ankara
+                  labels=False, longrid=False, latgrid = False)
+
+
+    # add shapefiles
+    turkey_district_shape = r'data/shapefiles/istanbul_ankara_izmir_shapefile.shp'
+    shape_district_turkey = ShapelyFeature(Reader(turkey_district_shape).geometries(),
+                                                 cartopy.crs.PlateCarree(), facecolor='none',
+                                                 edgecolor = 'black', linewidth = 0.1, zorder = 0.3)
+
+    turkey_province_shape = r'data/shapefiles/Iller_HGK_6360_Kanun_Sonrasi.shp'
+    shape_province_turkey = ShapelyFeature(Reader(turkey_province_shape).geometries(),
+                                                 cartopy.crs.PlateCarree(), facecolor='none',
+                                                 edgecolor = 'black', linewidth = 0.5, zorder = 0.4)
+
+    for i in range(graphic_no):
+        axs[i].add_feature(shape_district_turkey)
+        axs[i].add_feature(shape_province_turkey)   
+
+    # graphic code
+    for i, province in enumerate(['istanbul', 'izmir', 'ankara']):
+        
+        # plot
+        mesh = axs[i].pcolormesh(data_df[province]['x'], data_df[province]['y'],
+                                 data_df[province], cmap = cmap,
+                                 vmin = vmin, vmax = vmax, norm=norm,
+                                 zorder = 0.2)
+        
+        # Text
+        axs[i].set_title(fr'{province}',
+                          fontsize = 8, loc = 'left',
+                          pad = -14, y = 0.01,
+                          x=0.020, weight = 'bold',)
+
+
+    # cbar ----------------------
+    cbar = axs[2].colorbar(mesh, ticks=ticks, loc='r',
+                        drawedges = False, shrink=0.7,
+                        space = -0.8, aspect = 50, )
+    cbar.ax.tick_params(labelsize=7,)
+    cbar.set_ticks([])
+    cbar.ax.get_children()[4].set_color('black')
+    cbar.solids.set_linewidth(1)
+    cbar.set_ticks(ticks)
+    cbar.ax.set_yticklabels([
+                             'decrease',
+                             'no change',
+                             'increase',
+                             ])
+
+    # savefig    
+    plt.savefig(fr'pictures/{method}_fig.jpeg',
+                bbox_inches='tight', optimize=False, 
                 progressive=True, dpi=300)
