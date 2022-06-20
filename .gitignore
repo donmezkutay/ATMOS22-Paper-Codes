@@ -1,5 +1,8 @@
 /data
-/.ipynb_checkpoints
+.ipynb_checkpoints
 analysis.ipynb
 /old_codes
 sort_imports.py
+utils/__pycache__/
+*.pyc
+*.pyo

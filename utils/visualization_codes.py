@@ -73,7 +73,7 @@ def line_plot(dt, method, suptitle):
                      )
         
     # savefig    
-    plt.savefig(fr'../pictures/{method}_fig.jpeg',
+    plt.savefig(fr'pictures/{method}_fig.jpeg',
                 bbox_inches='tight', optimize=False,
                 progressive=True, dpi=300)
     
@@ -149,7 +149,7 @@ def corine_yearly_pdf_change_plot(dt, method, indexes, years, provinces):
              labels=legend_labels)
     
     # savefig    
-    plt.savefig(fr'../pictures/corine_{method}_fig.jpeg',
+    plt.savefig(fr'pictures/corine_{method}_fig.jpeg',
                 bbox_inches='tight', optimize=False,
                 progressive=True, dpi=300)
     
@@ -226,6 +226,6 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
                              ])
 
     # savefig    
-    plt.savefig(fr'../pictures/{method}_fig.jpeg',
+    plt.savefig(fr'pictures/{method}_fig.jpeg',
                 bbox_inches='tight', optimize=False, 
                 progressive=True, dpi=300)
