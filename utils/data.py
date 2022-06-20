@@ -281,7 +281,7 @@ def retrieve_modis(province, source_type):
     # merging two data together if province is Ankara
     if province == 'ankara':
         # y limit where we merge the two dataset together
-        v5_v4_boundary = 121
+        v5_v4_boundary = 120
         v5_v4_limit = 284
         
         # assign names to dataarrays
