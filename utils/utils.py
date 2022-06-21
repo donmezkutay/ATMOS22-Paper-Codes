@@ -194,6 +194,15 @@ def find_grid_amount(data, index, year=None):
                 .compute() \
                 .values
 
+def get_station_metadata(province):
+    
+    dt = pd.read_excel(fr'data/{province}/station/metadata.xlsx')
+    dt.attrs['data-source'] = 'station metadata'
+    dt.attrs['province'] = province
+    dt.attrs['height-unit'] = 'm'
+    
+    return dt
+
 def regrid_match(da_to_match, da_to_be_matched, 
                  da_to_match_crs, da_to_be_matched_crs):
     """
