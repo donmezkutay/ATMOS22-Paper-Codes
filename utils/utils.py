@@ -40,10 +40,10 @@ def define_dmsp_date(data, link):
     return data
 
 
-def define_corine_date(data, link):
+def define_corine_ghs_date(data, link, find):
     
     # find F tag after which the date is located on the link
-    F_tag = link.find('CLC')
+    F_tag = link.find(find)
     year = link[F_tag+3:F_tag+7]
     
     # assign time as a coord
