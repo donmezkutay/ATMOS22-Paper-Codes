@@ -193,3 +193,53 @@ def find_grid_amount(data, index, year=None):
                 .count()\
                 .compute() \
                 .values
+
+def regrid_match(da_to_match, da_to_be_matched, 
+                 da_to_match_crs, da_to_be_matched_crs):
+    """
+    Regrid a file grid to a target grid. Requires input data array
+    
+    Return target file and regridded file
+    
+    """
+    
+    # set crs for the target grid
+    da_to_match = da_to_match.rio.write_crs(da_to_match_crs)
+    da_to_match = da_to_match.rio.set_spatial_dims(x_dim='x', y_dim='y')
+    
+    # set crs for the file for which regridding will be performed
+    da_to_be_matched = da_to_be_matched.rio.write_crs(da_to_be_matched_crs)
+    da_to_be_matched = da_to_be_matched.rio.set_spatial_dims(x_dim='x', y_dim='y')
+    
+    
+    da_to_be_matched = da_to_be_matched.rio.reproject_match(da_to_match).rename({'y':'y', 'x':'x', })
+    
+    
+    return da_to_match, da_to_be_matched
+
+def reproject_modis_landuse_data(province, source_type):
+    """
+    Get the reprojected modis data (against land use data) and 
+    land use data for the given province and source type
+    """
+
+    province_lu_data = retrieve_ghs(province=province)
+    province_modis_data = retrieve_modis_merged(province=province, source_type=source_type)
+        
+    province_lu_data_repr, province_modis_data_repr = regrid_match(province_lu_data, province_modis_data,  
+                                                                   province_lu_data.rio.crs, province_modis_data.rio.crs,)  
+    
+    return province_lu_data_repr, province_modis_data_repr
+
+def classify_urban_rural(lu_data, urban_tiles, rural_tiles):
+    """"
+    classify urban and land use tiles of the land use data
+    0 for rural tiles, 1 for urban tiles, nan for the rest
+    """
+    
+    lu_data_classified = xr.where(lu_data.isin(urban_tiles), 1, xr.where(lu_data.isin(rural_tiles), 0, np.nan)) 
+    
+    return lu_data_classified
+
+def remove_nan_from_array(array):
+    return array[~np.isnan(array)]
