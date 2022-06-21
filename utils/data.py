@@ -178,6 +178,9 @@ def retrieve_corine(province):
     x = slice(48000,56000)
     y = slice(31000,40000)
     
+    # date finder
+    find = 'CLC'
+    
     # define general path to datasets
     general_path = f'data/{il}/{data_source}/*'
 
@@ -195,7 +198,8 @@ def retrieve_corine(province):
                             y=y)
         
         # define date of the current data
-        dt = define_corine_date(dt, link)
+        find = 'CLC'
+        dt = define_corine_ghs_date(dt, link, find)
         
         #accumulate datasets
         dt_list.append(dt)
@@ -322,4 +326,59 @@ def retrieve_modis_merged(province, source_type):
     
     # return data
     return dt
+
+def retrieve_ghs(province):
+    """
+    Adjusts and retrieves ghs dataset
+        of corresponding province.
+    """
+    
+    # path related to province
+    il = 'common'
+    
+    # data source
+    data_source = 'ghs'
+    
+    # date finder
+    find = 'POP'
+    
+    # define general path to datasets
+    general_path = f'data/{il}/{data_source}/*'
+
+    # get individual data links
+    data_links = glob(general_path)
+    
+    dt_list = []
+    for link in data_links:
+        
+        # open data
+        dt = rioxarray.open_rasterio(link,
+                                     chunks='10mb').squeeze() 
+        
+        # define date of the current data
+        dt = define_corine_ghs_date(dt, link, find)
+        
+        #accumulate datasets
+        dt_list.append(dt)
+        
+    # merge datasets
+    merged_dt = xr.concat(dt_list, dim='time')    
+    
+    # assign data source and province attribute
+    merged_dt = merged_dt.assign_attrs({'data-source': data_source})
+    merged_dt = merged_dt.assign_attrs({'province':province})
+    
+    # coordinate names
+    x_dims = 'x'
+    y_dims = 'y'
+    
+    # short-cut clip to province
+    clipped_dt = clip_subroutine(merged_dt, province, x_dims, y_dims)
+    
+    # turn nodata into np.nan
+    nodata = clipped_dt.rio.nodata
+    clipped_dt = clipped_dt.where(clipped_dt != nodata,
+                                  np.nan)
+    
+    return clipped_dt
         
