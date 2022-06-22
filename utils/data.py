@@ -192,7 +192,7 @@ def retrieve_corine(province):
         
         # open data
         dt = rioxarray.open_rasterio(link,
-                                     chunks='10mb') \
+                                     chunks=256) \
                       .squeeze() \
                       .isel(x=x, 
                             y=y)
