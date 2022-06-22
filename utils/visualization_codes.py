@@ -1,6 +1,7 @@
 import cartopy
 import matplotlib.pyplot as plt
 import proplot
+import seaborn as sns
 from cartopy.feature import ShapelyFeature
 from cartopy.io.shapereader import Reader
 
@@ -227,5 +228,44 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
 
     # savefig    
     plt.savefig(fr'pictures/{method}_fig.jpeg',
+                bbox_inches='tight', optimize=False, 
+                progressive=True, dpi=300)
+    
+    
+def plot_station_mean_difference(dt, mean_types, luses, method, province):
+    """
+    Plot mean difference between urban and nourban
+    """
+    
+    # create fig and axes
+    fig, axes = plt.subplots(1, 3,
+                             figsize=(15, 5),
+                             sharey=True,
+                             constrained_layout=True)
+    
+    #plt.subplots_adjust(wspace=5.2)
+    
+    # calculate mean difference between urban and nourban
+    for m_type in range(3):
+        
+        diff_luse = dt[luses[0]][mean_types[m_type]] - dt[luses[1]][mean_types[m_type]]
+
+        # make a dataframe
+        diff_luse_df = diff_luse.to_frame(name = '')
+        diff_luse_df = diff_luse_df.reset_index().rename(columns = {'Date':mean_types[m_type],
+                                                                    'Season':mean_types[m_type]})
+
+        # plot
+        sns.set_theme(style="whitegrid")
+        colors = ['#56a868', 'salmon', '#65b5ce']
+        sns.barplot(ax=axes[m_type], x = mean_types[m_type], y = '',
+                    data = diff_luse_df, color=colors[m_type],
+                    saturation=.5, linewidth=1, edgecolor="k",
+                    dodge=False)
+        axes[m_type].set_box_aspect(10/len(axes[m_type].patches)) #change 10 to modify the y/x axis ratio
+        
+    
+    # savefig    
+    plt.savefig(fr'pictures/{method}_{mean_types[m_type]}_{province}_fig.jpeg',
                 bbox_inches='tight', optimize=False, 
                 progressive=True, dpi=300)
