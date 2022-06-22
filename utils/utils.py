@@ -252,3 +252,61 @@ def classify_urban_rural(lu_data, urban_tiles, rural_tiles):
 
 def remove_nan_from_array(array):
     return array[~np.isnan(array)]
+
+def define_seasons_from_pd(dt, datetime_col):
+    """
+    Defines seasons from given pd DataFrame
+    """
+    
+    # create seasons out of dayoftheyear
+    return pd.cut(
+        (dt[datetime_col].dt.dayofyear + 11) % 366,
+        [0, 91, 183, 275, 366],
+        labels=['Winter', 'Spring', 'Summer', 'Fall']
+        )
+
+def calculate_yearly_mean(dt, datetime_col):
+    """
+    Calculates yearly mean of given pd DataFrame
+    """
+    
+    # yearly mean
+    return dt.groupby(dt[datetime_col].dt.year
+                     ).mean().mean(axis=1)
+
+def calculate_seasonal_mean(dt, datetime_col):
+    """
+    Calculates seasonal mean of given pd DataFrame
+    """
+    
+    # define seasons
+    dt['Season'] = define_seasons_from_pd(dt, datetime_col)
+    
+    # seasonal mean
+    return dt.groupby('Season').mean().mean(axis=1)
+
+def calculate_monthly_mean(dt, datetime_col):
+    """
+    Calculates monthly mean of given pd DataFrame
+    """
+    
+    # monthly mean
+    return dt.groupby(dt[datetime_col].dt.month
+                          ).mean().mean(axis=1)
+
+def adjust_station_data(dt):
+    
+    # dates queried: 2011 to 2018
+    date_query = list(range(2011, 2019))
+    dt = dt.query(f'Year in {date_query}').reset_index(drop=True)
+
+    # change -999 to np.nan
+    dt = dt.where(dt!=-999, np.nan)
+
+    # int to str
+    dt[['Year', 'Month', 'Day', 'Hour']] = dt[['Year', 'Month', 'Day', 'Hour']].astype(str)
+
+    # add new datetime col
+    dt['Date'] = pd.to_datetime(dt[['Year', 'Month', 'Day', 'Hour']])
+    
+    return dt
