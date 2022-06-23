@@ -215,14 +215,15 @@ def regrid_match(da_to_match, da_to_be_matched,
     
     # set crs for the target grid
     da_to_match = da_to_match.rio.write_crs(da_to_match_crs)
-    da_to_match = da_to_match.rio.set_spatial_dims(x_dim='x', y_dim='y')
+    da_to_match = da_to_match.rio.set_spatial_dims(x_dim=da_to_match.dims[1], y_dim=da_to_match.dims[0])
     
     # set crs for the file for which regridding will be performed
     da_to_be_matched = da_to_be_matched.rio.write_crs(da_to_be_matched_crs)
-    da_to_be_matched = da_to_be_matched.rio.set_spatial_dims(x_dim='x', y_dim='y')
+    da_to_be_matched = da_to_be_matched.rio.set_spatial_dims(x_dim=da_to_be_matched.dims[1], y_dim=da_to_be_matched.dims[0])
     
     
-    da_to_be_matched = da_to_be_matched.rio.reproject_match(da_to_match).rename({'y':'y', 'x':'x', })
+    da_to_be_matched = da_to_be_matched.rio.reproject_match(da_to_match).rename({da_to_be_matched.dims[0]:da_to_match.dims[0], 
+                                                                                 da_to_be_matched.dims[1]:da_to_match.dims[1], })
     
     
     return da_to_match, da_to_be_matched
