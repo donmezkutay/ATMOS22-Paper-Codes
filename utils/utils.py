@@ -6,7 +6,7 @@ import pandas as pd
 import pyproj
 import rioxarray
 from shapely.geometry import mapping
-from utils.data import *
+from .data import *
 
 
 def define_modis_date(data, link):
