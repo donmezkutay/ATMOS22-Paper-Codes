@@ -10,15 +10,13 @@ from .data import *
 from .utils import *
 
 
-def line_plot(dt, method, suptitle):
+def line_plot(dt, method, fig_array, suptitle):
     
     # start figure
-    f, axs = proplot.subplots(array=[[1, 1],
-                                     [2, 2],
-                                     [3, 3]],
-                              hratios=(1, 1, 1),
+    f, axs = proplot.subplots(array=fig_array,
+                              hratios=tuple(np.ones(len(fig_array), dtype=int)),
                               hspace=0.20,
-                              figsize=(6,4),
+                              figsize=(6,3),
                               share=3,
                               axwidth=1.5,
                               tight=False)
@@ -33,7 +31,7 @@ def line_plot(dt, method, suptitle):
     color_match = {
         'istanbul': 'purple',
         'ankara': 'orange',
-        'izmir': 'darkgreen'
+        #'izmir': 'darkgreen'
     }
     
     for i, province in enumerate(color_match.keys()):
@@ -54,7 +52,7 @@ def line_plot(dt, method, suptitle):
             y = province_dt.iloc[:, 1:].transpose().values/1e6 # pretty visual
             ylabel = 'Population (Mn)'
         
-        elif method == 'ratio':
+        elif method == 'population_ratio':
             y = province_dt.iloc[:, 1:].transpose().values
             ylabel = 'Percentage of Total (%)'
             
@@ -80,14 +78,12 @@ def line_plot(dt, method, suptitle):
                 progressive=True, dpi=300)
     
     
-def corine_yearly_pdf_change_plot(dt, method, indexes, years, provinces):
+def corine_yearly_pdf_change_plot(dt, method, fig_array, indexes, years, provinces):
     # start figure
-    f, axs = proplot.subplots(array=[[1, 1],
-                                     [2, 2],
-                                     [3, 3]],
-                                  hratios=(1, 1, 1),
+    f, axs = proplot.subplots(array=fig_array,
+                                  hratios=tuple(np.ones(len(fig_array), dtype=int)),
                                   hspace=0.20,
-                                  figsize=(4,6),
+                                  figsize=(6,4),
                                   share=3,
                                   axwidth=1.5,
                                   tight=False)
@@ -173,11 +169,11 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
                abc=True,)
     
     # format lon and lat limits
-    axs[0].format(lonlim=(27.7, 30), latlim=(40.5, 41.9), # istanbul
+    axs[1].format(lonlim=(27.5, 30.2), latlim=(40.3, 42), # istanbul
                   labels=False, longrid=False, latgrid = False)
-    axs[1].format(lonlim=(26, 28.7), latlim=(37.8, 39.5), # izmir
-                  labels=False, longrid=False, latgrid = False) 
-    axs[2].format(lonlim=(30.8, 33.9), latlim=(38.5, 40.8), # ankara
+    #axs[1].format(lonlim=(26, 28.7), latlim=(37.8, 39.5), # izmir
+    #              labels=False, longrid=False, latgrid = False) 
+    axs[0].format(lonlim=(30.8, 33.9), latlim=(38.5, 40.8), # ankara
                   labels=False, longrid=False, latgrid = False)
 
 
@@ -197,7 +193,7 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
         axs[i].add_feature(shape_province_turkey)   
 
     # graphic code
-    for i, province in enumerate(['istanbul', 'izmir', 'ankara']):
+    for i, province in enumerate(['ankara', 'istanbul']):
         
         # plot
         mesh = axs[i].pcolormesh(data_df[province]['x'], data_df[province]['y'],
@@ -207,21 +203,21 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
         
         # Text
         axs[i].set_title(fr'{province}',
-                          fontsize = 8, loc = 'left',
-                          pad = -14, y = 0.01,
-                          x=0.020, weight = 'bold',)
+                          fontsize = 8, loc = 'right',
+                          pad = -14, y = 0.88,
+                          x=0.970, weight = 'bold',)
 
 
     # cbar ----------------------
-    cbar = axs[2].colorbar(mesh, ticks=ticks, loc='r',
+    cbar = axs[1].colorbar(mesh, ticks=ticks, loc='b',
                         drawedges = False, shrink=0.7,
-                        space = -0.8, aspect = 50, )
+                        space = -0.1, aspect = 50, )
     cbar.ax.tick_params(labelsize=7,)
     cbar.set_ticks([])
     cbar.ax.get_children()[4].set_color('black')
     cbar.solids.set_linewidth(1)
     cbar.set_ticks(ticks)
-    cbar.ax.set_yticklabels([
+    cbar.ax.set_xticklabels([
                              'decrease',
                              'no change',
                              'increase',
