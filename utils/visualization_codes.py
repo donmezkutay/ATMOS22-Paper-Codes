@@ -133,6 +133,8 @@ def corine_yearly_pdf_change_plot(dt, method, fig_array, indexes, years, provinc
             df_tpose, cycle=color_list, edgecolor='red9', #colorbar='t', colorbar_kw={'frameon': True}
         )
         
+        axs[i].set_ylim([0, 60])
+        
         ylabel = 'Percentage of Total (%)'
         xlabel = 'Years'
         axs[i].format(xlocator=1,
