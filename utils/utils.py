@@ -263,7 +263,7 @@ def define_seasons_from_pd(dt, datetime_col):
     return pd.cut(
         (dt[datetime_col].dt.dayofyear + 11) % 366,
         [0, 91, 183, 275, 366],
-        labels=['Winter', 'Spring', 'Summer', 'Fall']
+        labels=['DJF', 'MAM', 'JJA', 'SON']
         )
 
 def calculate_yearly_mean(dt, datetime_col):
