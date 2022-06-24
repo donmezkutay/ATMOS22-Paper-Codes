@@ -1,5 +1,6 @@
 import cartopy
 import matplotlib.pyplot as plt
+import matplotlib.patheffects as pe
 import proplot
 import seaborn as sns
 from cartopy.feature import ShapelyFeature
@@ -9,15 +10,13 @@ from .data import *
 from .utils import *
 
 
-def line_plot(dt, method, suptitle):
+def line_plot(dt, method, fig_array, suptitle):
     
     # start figure
-    f, axs = proplot.subplots(array=[[1, 1],
-                                     [2, 2],
-                                     [3, 3]],
-                              hratios=(1, 1, 1),
+    f, axs = proplot.subplots(array=fig_array,
+                              hratios=tuple(np.ones(len(fig_array), dtype=int)),
                               hspace=0.20,
-                              figsize=(6,4),
+                              figsize=(6,3),
                               share=3,
                               axwidth=1.5,
                               tight=False)
@@ -32,7 +31,7 @@ def line_plot(dt, method, suptitle):
     color_match = {
         'istanbul': 'purple',
         'ankara': 'orange',
-        'izmir': 'darkgreen'
+        #'izmir': 'darkgreen'
     }
     
     for i, province in enumerate(color_match.keys()):
@@ -53,7 +52,7 @@ def line_plot(dt, method, suptitle):
             y = province_dt.iloc[:, 1:].transpose().values/1e6 # pretty visual
             ylabel = 'Population (Mn)'
         
-        elif method == 'ratio':
+        elif method == 'population_ratio':
             y = province_dt.iloc[:, 1:].transpose().values
             ylabel = 'Percentage of Total (%)'
             
@@ -79,14 +78,12 @@ def line_plot(dt, method, suptitle):
                 progressive=True, dpi=300)
     
     
-def corine_yearly_pdf_change_plot(dt, method, indexes, years, provinces):
+def corine_yearly_pdf_change_plot(dt, method, fig_array, indexes, years, provinces):
     # start figure
-    f, axs = proplot.subplots(array=[[1, 1],
-                                     [2, 2],
-                                     [3, 3]],
-                                  hratios=(1, 1, 1),
+    f, axs = proplot.subplots(array=fig_array,
+                                  hratios=tuple(np.ones(len(fig_array), dtype=int)),
                                   hspace=0.20,
-                                  figsize=(4,6),
+                                  figsize=(6,4),
                                   share=3,
                                   axwidth=1.5,
                                   tight=False)
@@ -136,6 +133,8 @@ def corine_yearly_pdf_change_plot(dt, method, indexes, years, provinces):
             df_tpose, cycle=color_list, edgecolor='red9', #colorbar='t', colorbar_kw={'frameon': True}
         )
         
+        axs[i].set_ylim([0, 60])
+        
         ylabel = 'Percentage of Total (%)'
         xlabel = 'Years'
         axs[i].format(xlocator=1,
@@ -172,11 +171,11 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
                abc=True,)
     
     # format lon and lat limits
-    axs[0].format(lonlim=(27.7, 30), latlim=(40.5, 41.9), # istanbul
+    axs[1].format(lonlim=(27.5, 30.2), latlim=(40.3, 42), # istanbul
                   labels=False, longrid=False, latgrid = False)
-    axs[1].format(lonlim=(26, 28.7), latlim=(37.8, 39.5), # izmir
-                  labels=False, longrid=False, latgrid = False) 
-    axs[2].format(lonlim=(30.8, 33.9), latlim=(38.5, 40.8), # ankara
+    #axs[1].format(lonlim=(26, 28.7), latlim=(37.8, 39.5), # izmir
+    #              labels=False, longrid=False, latgrid = False) 
+    axs[0].format(lonlim=(30.8, 33.9), latlim=(38.5, 40.8), # ankara
                   labels=False, longrid=False, latgrid = False)
 
 
@@ -196,7 +195,7 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
         axs[i].add_feature(shape_province_turkey)   
 
     # graphic code
-    for i, province in enumerate(['istanbul', 'izmir', 'ankara']):
+    for i, province in enumerate(['ankara', 'istanbul']):
         
         # plot
         mesh = axs[i].pcolormesh(data_df[province]['x'], data_df[province]['y'],
@@ -206,21 +205,21 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
         
         # Text
         axs[i].set_title(fr'{province}',
-                          fontsize = 8, loc = 'left',
-                          pad = -14, y = 0.01,
-                          x=0.020, weight = 'bold',)
+                          fontsize = 8, loc = 'right',
+                          pad = -14, y = 0.88,
+                          x=0.970, weight = 'bold',)
 
 
     # cbar ----------------------
-    cbar = axs[2].colorbar(mesh, ticks=ticks, loc='r',
+    cbar = axs[1].colorbar(mesh, ticks=ticks, loc='b',
                         drawedges = False, shrink=0.7,
-                        space = -0.8, aspect = 50, )
+                        space = -0.1, aspect = 50, )
     cbar.ax.tick_params(labelsize=7,)
     cbar.set_ticks([])
     cbar.ax.get_children()[4].set_color('black')
     cbar.solids.set_linewidth(1)
     cbar.set_ticks(ticks)
-    cbar.ax.set_yticklabels([
+    cbar.ax.set_xticklabels([
                              'decrease',
                              'no change',
                              'increase',
@@ -242,8 +241,6 @@ def plot_station_mean_difference(dt, mean_types, luses, method, province):
                              figsize=(15, 5),
                              sharey=True,
                              constrained_layout=True)
-    
-    #plt.subplots_adjust(wspace=5.2)
     
     # calculate mean difference between urban and nourban
     for m_type in range(3):
@@ -268,4 +265,64 @@ def plot_station_mean_difference(dt, mean_types, luses, method, province):
     # savefig    
     plt.savefig(fr'pictures/{method}_{mean_types[m_type]}_{province}_fig.jpeg',
                 bbox_inches='tight', optimize=False, 
+                progressive=True, dpi=300)
+    
+def station_time_mean_lineplot(monthly_mean_df,
+                               seasonal_mean_df,
+                               yearly_mean_df,
+                               method, 
+                               styles,
+                               colors,
+                               ):
+
+    # start figure
+    f, axs = proplot.subplots(array=[[1, 1, 2, 2],
+                                     [1, 1, 2, 2],
+                                     [3, 3, 3, 3], 
+                                     [3, 3, 3, 3]], 
+                              hratios=(1,), share=True, sharey=True,
+                              hspace=0.55, figsize=(9,6), axwidth=1.5, tight=True)
+
+    # path effect feature
+    path_effect = [pe.Stroke(linewidth=3, foreground='#403f3f'),
+                    pe.Normal()]
+
+    # plot lines
+    lp1 = axs[0].plot(monthly_mean_df, cycle=colors, lw=3,
+                      path_effects=path_effect)
+    lp2 = axs[1].plot(seasonal_mean_df, cycle=colors, lw=3,
+                      path_effects=path_effect)
+    lp3 = axs[2].plot(yearly_mean_df, cycle=colors, lw=3,
+                      path_effects=path_effect)
+
+    # linestyle
+    for i in range(3):
+        for j, l in enumerate(axs[i].lines):
+            plt.setp(l, ls=styles[j])
+
+    # ax legend
+    axs[0].legend(loc='ul', ncols=1, facecolor='white')
+
+    # axis formats
+    axs[0].format(ylabel='Temperature (°C)', xlabel='Months',
+                      ygridminor=False, ygrid=True, 
+                      titleloc='ll', xrotation=0,
+                      xlocator=proplot.arange(1, 13, 1), 
+                      xtickminor=False, ytickminor=False)
+
+    axs[1].format(xlabel='Seasons',
+                      ygridminor=False, ygrid=True, 
+                      titleloc='ll', xrotation=0,
+                      xtickminor=False, ytickminor=False)
+
+    axs[2].format(ylabel='Temperature (°C)', xlabel='Years',
+                      ygridminor=False,
+                      titleloc='ll', xrotation=0,
+                      xlocator=proplot.arange(2011, 2019, 1),
+                      xlim=(2011,2018),
+                      xtickminor=False)
+
+    # savefig    
+    plt.savefig(fr'pictures/{method}_time_mean_fig.jpeg',
+                bbox_inches='tight', optimize=False,
                 progressive=True, dpi=300)
