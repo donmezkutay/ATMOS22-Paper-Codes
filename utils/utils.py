@@ -305,15 +305,15 @@ def calculate_monthly_mean(dt, datetime_col):
     return dt.groupby(dt[datetime_col].dt.month
                           ).mean().mean(axis=1)
 
-def adjust_station_data(dt):
+def adjust_station_data(dt, start_year, end_year):
     
     # dates queried: 2011 to 2018
-    date_query = list(range(2011, 2019))
+    date_query = list(range(start_year, end_year+1))
     dt = dt.query(f'Year in {date_query}').reset_index(drop=True)
 
     # change -999 to np.nan
     dt = dt.where(dt!=-999, np.nan)
-
+    
     # int to str
     dt[['Year', 'Month', 'Day', 'Hour']] = dt[['Year', 'Month', 'Day', 'Hour']].astype(str)
 
