@@ -205,7 +205,9 @@ def get_station_metadata(province):
     return dt
 
 def regrid_match(da_to_match, da_to_be_matched, 
-                 da_to_match_crs, da_to_be_matched_crs):
+                 da_to_match_crs, da_to_be_matched_crs,
+                 da_to_match_x_dim, da_to_match_y_dim,
+                 da_to_be_matched_x_dim, da_to_be_matched_y_dim):
     """
     Regrid a file grid to a target grid. Requires input data array
     
@@ -215,19 +217,25 @@ def regrid_match(da_to_match, da_to_be_matched,
     
     # set crs for the target grid
     da_to_match = da_to_match.rio.write_crs(da_to_match_crs)
-    da_to_match = da_to_match.rio.set_spatial_dims(x_dim='x', y_dim='y')
+    da_to_match = da_to_match.rio.set_spatial_dims(x_dim=da_to_match_x_dim, y_dim=da_to_match_y_dim)
     
     # set crs for the file for which regridding will be performed
     da_to_be_matched = da_to_be_matched.rio.write_crs(da_to_be_matched_crs)
-    da_to_be_matched = da_to_be_matched.rio.set_spatial_dims(x_dim='x', y_dim='y')
+    da_to_be_matched = da_to_be_matched.rio.set_spatial_dims(x_dim=da_to_be_matched_x_dim, y_dim=da_to_be_matched_y_dim)
     
-    
-    da_to_be_matched = da_to_be_matched.rio.reproject_match(da_to_match).rename({'y':'y', 'x':'x', })
+    #print(da_to_be_matched.dims)
+    da_to_be_matched = da_to_be_matched.rio.reproject_match(da_to_match)
+    try:
+        da_to_be_matched = da_to_be_matched.rename({da_to_be_matched_x_dim:da_to_match_x_dim, 
+                                                    da_to_be_matched_y_dim:da_to_match_y_dim, })
+    except:
+        da_to_be_matched = da_to_be_matched
     
     
     return da_to_match, da_to_be_matched
 
-def reproject_modis_landuse_data(province, source_type):
+def reproject_modis_landuse_data(province, source_type, da_to_match_x_dim, da_to_match_y_dim,
+                                 da_to_be_matched_x_dim, da_to_be_matched_y_dim):
     """
     Get the reprojected modis data (against land use data) and 
     land use data for the given province and source type
@@ -237,7 +245,9 @@ def reproject_modis_landuse_data(province, source_type):
     province_modis_data = retrieve_modis_merged(province=province, source_type=source_type)
         
     province_lu_data_repr, province_modis_data_repr = regrid_match(province_lu_data, province_modis_data,  
-                                                                   province_lu_data.rio.crs, province_modis_data.rio.crs,)  
+                                                                   province_lu_data.rio.crs, province_modis_data.rio.crs,
+                                                                   da_to_match_x_dim, da_to_match_y_dim,
+                                                                   da_to_be_matched_x_dim, da_to_be_matched_y_dim)  
     
     return province_lu_data_repr, province_modis_data_repr
 
@@ -295,15 +305,15 @@ def calculate_monthly_mean(dt, datetime_col):
     return dt.groupby(dt[datetime_col].dt.month
                           ).mean().mean(axis=1)
 
-def adjust_station_data(dt):
+def adjust_station_data(dt, start_year, end_year):
     
     # dates queried: 2011 to 2018
-    date_query = list(range(2011, 2019))
+    date_query = list(range(start_year, end_year+1))
     dt = dt.query(f'Year in {date_query}').reset_index(drop=True)
 
     # change -999 to np.nan
     dt = dt.where(dt!=-999, np.nan)
-
+    
     # int to str
     dt[['Year', 'Month', 'Day', 'Hour']] = dt[['Year', 'Month', 'Day', 'Hour']].astype(str)
 
