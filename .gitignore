@@ -6,4 +6,5 @@ sort_imports.py
 utils/__pycache__/
 *.pyc
 *.pyo
-Abstract.docx
+*.docx
+*.tmp
