@@ -197,7 +197,7 @@ def find_grid_amount(data, index, year=None):
 
 def get_station_metadata(province):
     
-    dt = pd.read_excel(fr'data/{province}/station/metadata.xlsx')
+    dt = pd.read_excel(fr'data/{province}/station/locations.xlsx')
     dt.attrs['data-source'] = 'station metadata'
     dt.attrs['province'] = province
     dt.attrs['height-unit'] = 'm'

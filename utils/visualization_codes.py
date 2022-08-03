@@ -280,8 +280,11 @@ def station_time_mean_lineplot(monthly_mean_df,
                                      [1, 1, 2, 2],
                                      [3, 3, 3, 3], 
                                      [3, 3, 3, 3]], 
-                              hratios=(1,), share=True, sharey=True,
-                              hspace=0.55, figsize=(9,6), axwidth=1.5, tight=True)
+                              hratios=(1,), sharex=False, sharey=True,
+                              hspace=3.55, figsize=(9,6), axwidth=1.5, tight=True)
+    
+    # format whole figure
+    axs.format(abcloc='ul', abc=True,)
 
     # path effect feature
     path_effect = [pe.Stroke(linewidth=3, foreground='#403f3f'),
@@ -301,7 +304,7 @@ def station_time_mean_lineplot(monthly_mean_df,
             plt.setp(l, ls=styles[j])
 
     # ax legend
-    axs[0].legend(loc='ul', ncols=1, facecolor='white')
+    axs[1].legend(loc='lr', ncols=2, facecolor='white')
 
     # axis formats
     axs[0].format(ylabel='Temperature (°C)', xlabel='Months',
@@ -325,4 +328,4 @@ def station_time_mean_lineplot(monthly_mean_df,
     # savefig    
     plt.savefig(fr'pictures/{method}_time_mean_fig.jpeg',
                 bbox_inches='tight', optimize=False,
-                progressive=True, dpi=300)
+                progressive=True, dpi=1000)
