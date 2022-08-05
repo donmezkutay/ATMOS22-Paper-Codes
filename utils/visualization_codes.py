@@ -281,7 +281,7 @@ def station_time_mean_lineplot(monthly_mean_df,
                                      [3, 3, 3, 3], 
                                      [3, 3, 3, 3]], 
                               hratios=(1,), sharex=False, sharey=True,
-                              hspace=0.45, figsize=(9,6), axwidth=1.5, tight=True)
+                              hspace=3.55, figsize=(9,6), axwidth=1.5, tight=True)
     
     # format whole figure
     axs.format(abcloc='ul', abc=True,)
@@ -344,7 +344,7 @@ def modis_time_mean_lineplot(monthly_mean_df,
                                      [3, 3, 3, 3], 
                                      [3, 3, 3, 3]], 
                               hratios=(1,), sharex=False, sharey=3,
-                              hspace=0.45, figsize=(9,6), axwidth=1.5, tight=True)
+                              hspace=3.55, figsize=(9,6), axwidth=1.5, tight=True)
     
     # format whole figure
     axs.format(abcloc='ul', abc=True,)
