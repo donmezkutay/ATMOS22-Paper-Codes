@@ -281,7 +281,7 @@ def station_time_mean_lineplot(monthly_mean_df,
                                      [3, 3, 3, 3], 
                                      [3, 3, 3, 3]], 
                               hratios=(1,), sharex=False, sharey=True,
-                              hspace=3.55, figsize=(9,6), axwidth=1.5, tight=True)
+                              hspace=0.45, figsize=(9,6), axwidth=1.5, tight=True)
     
     # format whole figure
     axs.format(abcloc='ul', abc=True,)
@@ -316,6 +316,71 @@ def station_time_mean_lineplot(monthly_mean_df,
     axs[1].format(xlabel='Seasons',
                       ygridminor=False, ygrid=True, 
                       titleloc='ll', xrotation=0,
+                      xtickminor=False, ytickminor=False)
+
+    axs[2].format(ylabel='Temperature (°C)', xlabel='Years',
+                      ygridminor=False,
+                      titleloc='ll', xrotation=0,
+                      xlocator=proplot.arange(2011, 2019, 1),
+                      xlim=(2011,2018),
+                      xtickminor=False)
+
+    # savefig    
+    plt.savefig(fr'pictures/{method}_time_mean_fig.jpeg',
+                bbox_inches='tight', optimize=False,
+                progressive=True, dpi=1000)
+    
+def modis_time_mean_lineplot(monthly_mean_df,
+                               seasonal_mean_df,
+                               yearly_mean_df,
+                               method, 
+                               styles,
+                               colors,
+                               ):
+
+    # start figure
+    f, axs = proplot.subplots(array=[[1, 1, 2, 2],
+                                     [1, 1, 2, 2],
+                                     [3, 3, 3, 3], 
+                                     [3, 3, 3, 3]], 
+                              hratios=(1,), sharex=False, sharey=3,
+                              hspace=0.45, figsize=(9,6), axwidth=1.5, tight=True)
+    
+    # format whole figure
+    axs.format(abcloc='ul', abc=True,)
+
+    # path effect feature
+    path_effect = [pe.Stroke(linewidth=3, foreground='#403f3f'),
+                    pe.Normal()]
+
+    # plot lines
+    lp1 = axs[0].plot(monthly_mean_df, cycle=colors, lw=3,
+                      path_effects=path_effect)
+    lp2 = axs[1].plot(seasonal_mean_df, cycle=colors, lw=3,
+                      path_effects=path_effect)
+    lp3 = axs[2].plot(yearly_mean_df, cycle=colors, lw=3,
+                      path_effects=path_effect)
+
+    # linestyle
+    for i in range(3):
+        for j, l in enumerate(axs[i].lines):
+            plt.setp(l, ls=styles[j])
+
+    # ax legend
+    axs[1].legend(loc='lr', ncols=2, facecolor='white')
+
+    # axis formats
+    axs[0].format(ylabel='Temperature (°C)', xlabel='Months',
+                      ygridminor=False, ygrid=True, 
+                      titleloc='ll', xrotation=0,
+                      ylim=(0, 40),
+                      xlocator=proplot.arange(1, 13, 1), 
+                      xtickminor=False, ytickminor=False)
+
+    axs[1].format(xlabel='Seasons',
+                      ygridminor=False, ygrid=True, 
+                      titleloc='ll', xrotation=0,
+                      ylim=(0, 40),
                       xtickminor=False, ytickminor=False)
 
     axs[2].format(ylabel='Temperature (°C)', xlabel='Years',
