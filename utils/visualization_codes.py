@@ -75,7 +75,7 @@ def line_plot(dt, method, fig_array, suptitle):
     # savefig    
     plt.savefig(fr'pictures/{method}_fig.jpeg',
                 bbox_inches='tight', optimize=False,
-                progressive=True, dpi=300)
+                progressive=True, dpi=1000)
     
     
 def corine_yearly_pdf_change_plot(dt, method, fig_array, indexes, years, provinces):
@@ -151,7 +151,7 @@ def corine_yearly_pdf_change_plot(dt, method, fig_array, indexes, years, provinc
     # savefig    
     plt.savefig(fr'pictures/corine_{method}_fig.jpeg',
                 bbox_inches='tight', optimize=False,
-                progressive=True, dpi=300)
+                progressive=True, dpi=1000)
     
     
 def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
@@ -162,11 +162,11 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
     fig, axs = proplot.subplots(fig_array, 
                               aspect=4, axwidth=2, proj=proj,
                               hratios=tuple(np.ones(len(fig_array), dtype=int)),
-                              includepanels=True, hspace=-0.10, wspace=0.1)
+                              includepanels=True, hspace=-0.10, wspace=0.5)
 
     # format whole figure
     axs.format(
-               suptitle=suptitle,
+               #suptitle=suptitle,
                abcloc='ul',
                abc=True,)
     
@@ -204,10 +204,10 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
                                  zorder = 0.2)
         
         # Text
-        axs[i].set_title(fr'{province}',
-                          fontsize = 8, loc = 'right',
-                          pad = -14, y = 0.88,
-                          x=0.970, weight = 'bold',)
+        #axs[i].set_title(fr'{province}',
+        #                  fontsize = 8, loc = 'right',
+        #                  pad = -14, y = 0.88,
+        #                  x=0.970, weight = 'bold',)
 
 
     # cbar ----------------------
@@ -228,7 +228,7 @@ def dmsp_difference_last_first_plot(data_df, method, fig_array, graphic_no,
     # savefig    
     plt.savefig(fr'pictures/{method}_fig.jpeg',
                 bbox_inches='tight', optimize=False, 
-                progressive=True, dpi=300)
+                progressive=True, dpi=1000)
     
     
 def plot_station_mean_difference(dt, mean_types, luses, method, province):
@@ -265,7 +265,7 @@ def plot_station_mean_difference(dt, mean_types, luses, method, province):
     # savefig    
     plt.savefig(fr'pictures/{method}_{mean_types[m_type]}_{province}_fig.jpeg',
                 bbox_inches='tight', optimize=False, 
-                progressive=True, dpi=300)
+                progressive=True, dpi=1000)
     
 def station_time_mean_lineplot(monthly_mean_df,
                                seasonal_mean_df,
